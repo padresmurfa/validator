@@ -308,6 +308,17 @@ export default class Validator
         return this;
     }
 
+    intercept(interceptor)
+    {
+        if (!_.isFunction(interceptor))
+        {
+            throw new Error("Interceptors must be functions");      
+        }
+        const property = this.__updateProperty("Only properties may be intercepted");
+        property.interceptValidation = interceptor;
+        return this;
+    }
+
     instanceOf(propertyName, classNames)
     {
         if (propertyName !== undefined)

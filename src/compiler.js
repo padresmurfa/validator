@@ -95,6 +95,13 @@ class Compiler {
 
             const ae = assumptionEngineFactory(identifier + "/" + propName);
 
+            if (p.interceptValidation !== undefined)
+            {
+                c.add( propName, "intercept", (...args)=>{
+                    const ret = p.interceptValidation(...args);
+                    ae.isTrue(ret, ret);
+                 });
+            }
             if (p.expectUndefined === true)
             {
                 c.add( propName, "isUndefined", ae.isUndefined );

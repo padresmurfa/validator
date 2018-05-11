@@ -296,6 +296,16 @@ var Validator = function () {
             return this;
         }
     }, {
+        key: 'intercept',
+        value: function intercept(interceptor) {
+            if (!_lodash2.default.isFunction(interceptor)) {
+                throw new Error("Interceptors must be functions");
+            }
+            var property = this.__updateProperty("Only properties may be intercepted");
+            property.interceptValidation = interceptor;
+            return this;
+        }
+    }, {
         key: 'instanceOf',
         value: function instanceOf(propertyName, classNames) {
             if (propertyName !== undefined) {

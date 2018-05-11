@@ -122,6 +122,12 @@ var Compiler = function () {
 
                 var ae = assumptionEngineFactory(identifier + "/" + propName);
 
+                if (p.interceptValidation !== undefined) {
+                    c.add(propName, "intercept", function () {
+                        var ret = p.interceptValidation.apply(p, arguments);
+                        ae.isTrue(ret, ret);
+                    });
+                }
                 if (p.expectUndefined === true) {
                     c.add(propName, "isUndefined", ae.isUndefined);
                 }
