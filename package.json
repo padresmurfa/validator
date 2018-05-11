@@ -6,9 +6,8 @@
   "scripts": {
     "test": "node_modules/.bin/jest",
     "clean": "rm -rf dist && mkdir dist && mkdir dist/babel",
-    "babel": "npx babel src --out-dir dist/babel",
-    "minify": "cat dist/babel/* | npx minify --js > dist/validator.min.js",
-    "build": "npm run-script babel && npm run-script minify",
+    "babel": "npx babel src --out-dir dist",
+    "build": "npm run-script babel",
     "rebuild": "npm run-script clean && npm run-script build"
   },
   "repository": {

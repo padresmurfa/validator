@@ -9,7 +9,7 @@ import compile from './compiler';
 import ValidationFailed from './validation-failed';
 
 function isWhiteSpace(params) {
-    if (/\S/.test(myString)) {
+    if (/\S/.test(params)) {
         // string is not empty and not just whitespace
         return false;
     }

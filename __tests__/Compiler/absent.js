@@ -8,7 +8,7 @@ describe('Compiler', ()=>{
     describe('absent',()=>{
 
         it('can compile and check an absent validator', ()=>{
-            c = validator(id).string("property").absent();
+            let c = validator(id).string("property").absent();
 
             c.check({property: undefined});
         });
