@@ -2,10 +2,10 @@
   "name": "@padresmurfa/validator",
   "version": "0.1.2",
   "description": "Validate data structures uasing a fluent API, to prevent GIGO issues in your code.",
-  "main": "dist/validator.min.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "node_modules/.bin/jest",
-    "clean": "rm -rf dist && mkdir dist && mkdir dist/babel",
+    "clean": "rm -rf dist && mkdir dist",
     "babel": "npx babel src --out-dir dist",
     "build": "npm run-script babel",
     "rebuild": "npm run-script clean && npm run-script build"
