@@ -58,7 +58,7 @@ describe('validator', ()=>{
                 return item.integer();
             }).property();
 
-            expect(property.objectValidator.property(":self").property().expectInteger).toBe(true);
+            expect(property.objectValidator.property().expectInteger).toBe(true);
         });
 
         it('flags the property for recompilation after update', ()=>{

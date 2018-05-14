@@ -282,7 +282,7 @@ export default class Validator
         property.expectNullable = false;
         if (arrayItemValidator !== undefined)
         {
-            const v = Validator.create(this.path()).property(":array-item").optional();
+            const v = Validator.create(this.path()).optional();
             property.itemValidator = arrayItemValidator(v);
         }
 
@@ -313,7 +313,7 @@ export default class Validator
         property.expectNullable = false;
         if (objectValidator !== undefined)
         {
-            const v = Validator.create(this.path()).property(":self");
+            const v = Validator.create(this.path());
             property.objectValidator = objectValidator(v);
         }
         return this;
@@ -413,7 +413,7 @@ export default class Validator
     __readProperty(msg)
     {
         const property = this.property();
-        if (property === null)
+        if (property === undefined)
         {
             throw new Error(msg);
         }

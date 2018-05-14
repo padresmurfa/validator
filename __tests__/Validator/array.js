@@ -54,7 +54,7 @@ describe('validator', ()=>{
                 return item.integer();
             }).property();
 
-            expect(property.itemValidator.property(":array-item").property().expectInteger).toBe(true);
+            expect(property.itemValidator.property().expectInteger).toBe(true);
         });
 
         it('flags the property for recompilation after update', ()=>{
