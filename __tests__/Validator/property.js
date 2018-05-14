@@ -16,7 +16,7 @@ describe('validator', ()=>{
 
         it('returns null when property is not found', ()=>{
             let property = container.property();
-            expect(property).toBeNull();
+            expect(property).toEqual({});
         });
 
         it('returns "this" like a good fluent api when a property is added', ()=>{

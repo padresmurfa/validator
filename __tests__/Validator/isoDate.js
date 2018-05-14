@@ -16,7 +16,7 @@ describe('validator', ()=>{
 
         it('throws error when isoDate is called without a property', ()=>{
             let property = container.property();
-            expect(property).toBeNull();
+            expect(property).toEqual({});
 
             try
             {
@@ -24,7 +24,7 @@ describe('validator', ()=>{
             }
             catch (e)
             {
-                expect(e.message).toBe("Only properties may be expected to be ISO dates");
+                assume.fail("Properties should not be required");
             }
         });
 

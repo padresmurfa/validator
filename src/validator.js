@@ -54,7 +54,18 @@ export default class Validator
     {
         if (propertyName === undefined)
         {
-            return this.__storage[this.__propertyName] || null;
+            if (this.__propertyName !== null)
+            {
+                if (this.__storage[propertyName] === undefined)
+                {
+                    this.__storage[propertyName] = {};
+                }
+                return this.__storage[this.__propertyName];
+            }
+            else
+            {
+                return this.__storage;
+            }
         }
         else if (this.__propertyName !== propertyName)
         {
