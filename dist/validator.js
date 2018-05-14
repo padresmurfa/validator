@@ -71,7 +71,14 @@ var Validator = function () {
         key: 'property',
         value: function property(propertyName) {
             if (propertyName === undefined) {
-                return this.__storage[this.__propertyName] || null;
+                if (this.__propertyName !== null) {
+                    if (this.__storage[propertyName] === undefined) {
+                        this.__storage[propertyName] = {};
+                    }
+                    return this.__storage[this.__propertyName];
+                } else {
+                    return this.__storage;
+                }
             } else if (this.__propertyName !== propertyName) {
                 this.__propertyName = propertyName;
                 if (this.__storage[propertyName] === undefined) {
@@ -264,7 +271,7 @@ var Validator = function () {
             property.expectArray = true;
             property.expectNullable = false;
             if (arrayItemValidator !== undefined) {
-                var v = Validator.create(this.path()).property(":array-item").optional();
+                var v = Validator.create(this.path()).optional();
                 property.itemValidator = arrayItemValidator(v);
             }
 
@@ -290,7 +297,7 @@ var Validator = function () {
             property.expectObject = true;
             property.expectNullable = false;
             if (objectValidator !== undefined) {
-                var v = Validator.create(this.path()).property(":self");
+                var v = Validator.create(this.path());
                 property.objectValidator = objectValidator(v);
             }
             return this;
@@ -376,7 +383,7 @@ var Validator = function () {
         key: '__readProperty',
         value: function __readProperty(msg) {
             var property = this.property();
-            if (property === null) {
+            if (property === undefined) {
                 throw new Error(msg);
             }
             return property;
