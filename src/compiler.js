@@ -22,37 +22,15 @@ class Compiled
 
     check(value)
     {
-        /*
+       _.forEach(this.checks, (check)=>{
 
-        console.log("check: ", {
-            isObject: this.isObject,
-            isNullable: this.isNullable,
-            isOptional: this.isOptional,
-            checks: this.checks,
-            value,
-            property: this.property
+            let v = value;
+            if (check.propName !== "$")
+            {
+                v = v[check.propName];
+            }
+           this.checkProperty(check, v);
         });
-
-        */
-
-       // this.isObject = p.expectObject === true;
-
-       _.forEach(this.checks, (check)=>{ this.checkProperty(check, value[check.propName]); });
-
-       return;
-
-       const l = this.checks.length;
-
-       for (var i = 0; i < l; i++)
-       {
-            const check = this.checks[i];
-
-            const label = `Compiled.check[${check.propName}]`;
-
-            const method = rename(label, this.__checkProperty);
-
-            method();
-        }
     }
 
     checkProperty(check, propertyValue)
@@ -160,7 +138,7 @@ class Compiler {
             }
             if (p.objectValidator !== undefined)
             {
-                c.add( propName, "isObject", p.objectValidator.check );
+                c.add( propName, "isObject", p.objectValidator.check.bind(p.objectValidator) );
             }
             if (p.uniqueCriteria !== undefined)
             {

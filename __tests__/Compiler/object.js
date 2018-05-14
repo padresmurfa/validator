@@ -27,6 +27,19 @@ describe('Compiler', ()=>{
 
     const id = "test-validator-Compiler";
 
+    /*
+    describe('object',()=>{
+        it('accepts an object item', ()=>{
+            let c = validator(id).object((item)=>{
+                return item.string("Actor").isoDate("Now");
+            });
+            
+            c.check({Actor:"dsa",Now:"2018-04-07"});
+        });
+    });
+    return;
+    */
+
     describe('object',()=>{
 
         it('can compile and check an object validator', ()=>{
@@ -46,15 +59,44 @@ describe('Compiler', ()=>{
                 return item.string("Actor").isoDate("Now");
             });
             
-            c.check({Actor:"dsa",Now:"33"});
+            c.check({Actor:"dsa",Now:"2018-04-07"});
         });
 
-        it('accepts an object item', ()=>{
-            let c = createSchema().get("Request").object((item)=>{
-                return item.string("Actor").isoDate("Now");
-            });
+        it('validates a complex structure', ()=>{
+            let c = createSchema().get("GetOrdersRsp").object((item)=>{
+                return item.
+                    boolean("Ok").
+                    object("Payload", (item)=>{
+                        return item.array("ShoppingCarts",(item)=>{
+                            return item.integer("Id").
+                                isoDate("TimeStamp").
+                                array("Contents", (item)=>{
+                                    return item.
+                                        integer("Id").
+                                        integer("ProductId").
+                                        integer("Quantity").
+                                        boolean("Undoable").
+                                        isoDate("DeliveryDate");
+                                });
+                        });
+                    });
+                });
             
-            c.check({Actor:"dsa",Now:"33"});
+            c.check({
+                Ok:true,
+                Payload:{
+                    ShoppingCarts:[
+                        {
+                            Id: 1,
+                            TimeStamp: "2013-06-12",
+                            Contents:[
+                                {Id:1, ProductId: 2, Quantity: 3, Undoable: true, DeliveryDate: "2011-09-07"}
+                            ]
+                        }
+                    ]
+                }
+            });
         });
+        
     });
 });
