@@ -45,36 +45,14 @@ var Compiled = function () {
         value: function check(value) {
             var _this = this;
 
-            /*
-             console.log("check: ", {
-                isObject: this.isObject,
-                isNullable: this.isNullable,
-                isOptional: this.isOptional,
-                checks: this.checks,
-                value,
-                property: this.property
-            });
-             */
-
-            // this.isObject = p.expectObject === true;
-
             _lodash2.default.forEach(this.checks, function (check) {
-                _this.checkProperty(check, value[check.propName]);
+
+                var v = value;
+                if (check.propName !== "$") {
+                    v = v[check.propName];
+                }
+                _this.checkProperty(check, v);
             });
-
-            return;
-
-            var l = this.checks.length;
-
-            for (var i = 0; i < l; i++) {
-                var check = this.checks[i];
-
-                var label = 'Compiled.check[' + check.propName + ']';
-
-                var method = rename(label, this.__checkProperty);
-
-                method();
-            }
         }
     }, {
         key: 'checkProperty',
@@ -172,7 +150,7 @@ var Compiler = function () {
                     });
                 }
                 if (p.objectValidator !== undefined) {
-                    c.add(propName, "isObject", p.objectValidator.check);
+                    c.add(propName, "isObject", p.objectValidator.check.bind(p.objectValidator));
                 }
                 if (p.uniqueCriteria !== undefined) {
                     c.add(propName, "isUnique", function (v) {

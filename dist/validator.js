@@ -71,15 +71,18 @@ var Validator = function () {
         key: 'property',
         value: function property(propertyName) {
             if (propertyName === undefined) {
-                if (this.__propertyName !== null) {
-                    if (this.__storage[propertyName] === undefined) {
-                        this.__storage[propertyName] = {};
-                    }
-                    return this.__storage[this.__propertyName];
-                } else {
-                    return this.__storage;
+                propertyName = this.__propertyName;
+                if (propertyName === null) {
+                    propertyName = "$";
                 }
+                if (this.__storage[propertyName] === undefined) {
+                    this.__storage[propertyName] = {};
+                }
+                return this.__storage[propertyName];
             } else if (this.__propertyName !== propertyName) {
+                if (propertyName === null) {
+                    propertyName = "$";
+                }
                 this.__propertyName = propertyName;
                 if (this.__storage[propertyName] === undefined) {
                     this.__storage[propertyName] = {};
