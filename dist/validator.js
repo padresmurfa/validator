@@ -113,7 +113,10 @@ var Validator = function () {
                 throw new Error("Clones must have a variant name");
             }
 
-            return new Validator(this.path() + ":" + variant);
+            var retval = new Validator(variant);
+            retval.propertyName = this.__propertyName;
+            retval.__storage = _lodash2.default.cloneDeep(this.__storage);
+            return retval;
         }
     }, {
         key: 'immutable',
@@ -274,8 +277,12 @@ var Validator = function () {
             property.expectArray = true;
             property.expectNullable = false;
             if (arrayItemValidator !== undefined) {
-                var v = Validator.create(this.path()).optional();
-                property.itemValidator = arrayItemValidator(v);
+                if (!_lodash2.default.isFunction(arrayItemValidator)) {
+                    property.itemValidator = arrayItemValidator.clone(this.path());
+                } else {
+                    var v = Validator.create(this.path());
+                    property.itemValidator = arrayItemValidator(v);
+                }
             }
 
             return this;
@@ -300,8 +307,12 @@ var Validator = function () {
             property.expectObject = true;
             property.expectNullable = false;
             if (objectValidator !== undefined) {
-                var v = Validator.create(this.path());
-                property.objectValidator = objectValidator(v);
+                if (!_lodash2.default.isFunction(objectValidator)) {
+                    property.objectValidator = objectValidator.clone(this.path());
+                } else {
+                    var v = Validator.create(this.path());
+                    property.objectValidator = objectValidator(v);
+                }
             }
             return this;
         }
