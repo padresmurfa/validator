@@ -266,8 +266,9 @@ var Validator = function () {
         key: 'array',
         value: function array(propertyName, arrayItemValidator) {
             if (propertyName !== undefined) {
-                if (_lodash2.default.isFunction(propertyName)) {
+                if (arrayItemValidator === undefined && !_lodash2.default.isString(propertyName)) {
                     arrayItemValidator = propertyName;
+                    propertyName = undefined;
                 } else {
                     this.property(propertyName);
                 }
@@ -296,8 +297,9 @@ var Validator = function () {
         key: 'object',
         value: function object(propertyName, objectValidator) {
             if (propertyName !== undefined) {
-                if (_lodash2.default.isFunction(propertyName)) {
+                if (objectValidator === undefined && !_lodash2.default.isString(propertyName)) {
                     objectValidator = propertyName;
+                    propertyName = undefined;
                 } else {
                     this.property(propertyName);
                 }
@@ -330,8 +332,9 @@ var Validator = function () {
         key: 'is',
         value: function is(propertyName, validator) {
             if (propertyName !== undefined) {
-                if (_lodash2.default.isUndefined(validator)) {
+                if (validator === undefined && !_lodash2.default.isString(propertyName)) {
                     validator = propertyName;
+                    propertyName = undefined;
                 } else {
                     this.property(propertyName);
                 }
