@@ -1,7 +1,7 @@
 import moment from 'moment';
 import _ from 'lodash';
 
-import assume, { Assume, normalizeClassNames } from '@padresmurfa/assume';
+import assume, { Assume } from '@padresmurfa/assume';
 
 import ValidationFailed from './validation-failed';
 
@@ -149,10 +149,10 @@ class Compiler {
                     ae.areEqual(vl, ol, msg);
                 });
             }
-            if (p.expectInstanceOf !== undefined)
+            if (p.expectIs !== undefined)
             {
-                c.add("isInstanceOf", (v)=>{
-                    ae.isInstanceOf(v, p.expectInstanceOf);
+                _.forEach(p.expectIs,(is)=>{
+                    c.add(propName, "is", is.check.bind(is));
                 });
             }
         });

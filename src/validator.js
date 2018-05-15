@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 import binding from '@padresmurfa/binding';
 
-import assume, { Assume, normalizeClassNames } from '@padresmurfa/assume';
+import assume, { Assume } from '@padresmurfa/assume';
 
 import compile from './compiler';
 import ValidationFailed from './validation-failed';
@@ -349,22 +349,23 @@ export default class Validator
         return this;
     }
 
-    instanceOf(propertyName, classNames)
+    is(propertyName, validator)
     {
         if (propertyName !== undefined)
         {
-            if (_.isUndefined(classNames))
+            if (_.isUndefined(validator))
             {
-                classNames = propertyName;
+                validator = propertyName;
             }
             else
             {
-                this.object(propertyName);
+                this.property(propertyName);
             }
         }
         
         const property = this.__updateProperty("Only properties may be expected to be instances");
-        property.expectInstanceOf = normalizeClassNames(classNames);
+        property.expectIs = property.expectIs || [];
+        property.expectIs.push(validator);
         return this;
     }
 
@@ -424,8 +425,6 @@ export default class Validator
 
     check(props)
     {
-        assume.isInstanceOf(this, "Validator", "Check called with incorrect this pointer.  Expected a Validator");
-
         return this.compiled().check(props);
     }
 
