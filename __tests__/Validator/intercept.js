@@ -35,6 +35,7 @@ describe('validator', ()=>{
             try
             {
                 container.intercept(true);
+                assume.fail();
             }
             catch (e)
             {

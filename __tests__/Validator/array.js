@@ -57,6 +57,15 @@ describe('validator', ()=>{
             expect(property.itemValidator.property().expectInteger).toBe(true);
         });
 
+        it('can validate array items with an inner validator', ()=>{
+            const inner = validator().boolean("rf");
+            let property = container.array("smu",inner).property();
+
+            expect(property.expectArray).toBe(true);
+            expect(property.itemValidator.property("rf").property().expectBoolean).toBe(true);
+            expect(property.itemValidator.property("rf").path()).toBe(id + "/smu/rf");
+        });
+        
         it('flags the property for recompilation after update', ()=>{
             let before = container.property("smurf").compiled();
             container.array((item)=>{

@@ -106,7 +106,10 @@ export default class Validator
             throw new Error("Clones must have a variant name");
         }
 
-        return new Validator(this.path() + ":" + variant);
+        const retval = new Validator(variant);
+        retval.propertyName = this.__propertyName;
+        retval.__storage = _.cloneDeep(this.__storage);
+        return retval;
     }
 
     immutable(propertyName)
@@ -284,8 +287,15 @@ export default class Validator
         property.expectNullable = false;
         if (arrayItemValidator !== undefined)
         {
-            const v = Validator.create(this.path()).optional();
-            property.itemValidator = arrayItemValidator(v);
+            if (!_.isFunction(arrayItemValidator))
+            {
+                property.itemValidator = arrayItemValidator.clone(this.path());
+            }
+            else
+            {
+                const v = Validator.create(this.path());
+                property.itemValidator = arrayItemValidator(v);
+            }
         }
 
         return this;
@@ -315,8 +325,15 @@ export default class Validator
         property.expectNullable = false;
         if (objectValidator !== undefined)
         {
-            const v = Validator.create(this.path());
-            property.objectValidator = objectValidator(v);
+            if (!_.isFunction(objectValidator))
+            {
+                property.objectValidator = objectValidator.clone(this.path());
+            }
+            else
+            {
+                const v = Validator.create(this.path());
+                property.objectValidator = objectValidator(v);
+            }
         }
         return this;
     }

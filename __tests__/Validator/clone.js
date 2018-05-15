@@ -18,6 +18,7 @@ describe('validator', ()=>{
             try
             {
                 container.clone();
+                assume.fail();
             }
             catch (e)
             {
@@ -29,6 +30,7 @@ describe('validator', ()=>{
             try
             {
                 container.clone(1);
+                assume.fail();
             }
             catch (e)
             {
@@ -40,6 +42,7 @@ describe('validator', ()=>{
             try
             {
                 container.clone("");
+                assume.fail();
             }
             catch (e)
             {
@@ -51,6 +54,7 @@ describe('validator', ()=>{
             try
             {
                 container.clone(" ");
+                assume.fail();
             }
             catch (e)
             {

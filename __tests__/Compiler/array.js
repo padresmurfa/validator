@@ -66,5 +66,21 @@ describe('Compiler', ()=>{
 
             c.check({property: undefined});
         });
+
+        it('validates using an inner validator', ()=>{
+            const inner = validator().boolean("rf");
+            const c = validator("arr").array("smu",inner);
+
+            c.check({smu: [{rf: true}]});
+            try
+            {
+                c.check({smu: [{rf: null}]});
+                assume.fail("Should not have passed the prior validation check");
+            }
+            catch (e)
+            {
+                expect(e.message).toBe("arr/smu/rf: Expected value (<null>) to be a boolean");
+            }
+        });
     });
 });

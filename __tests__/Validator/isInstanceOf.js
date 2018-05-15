@@ -72,6 +72,7 @@ describe('validator', ()=>{
             try
             {                
                 container.property("smurf").instanceOf(["asd","basdf"]);
+                assume.fail();
             }
             catch (e)
             {

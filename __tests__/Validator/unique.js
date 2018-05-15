@@ -23,6 +23,7 @@ describe('validator', ()=>{
             try
             {
                 container.object("asdf").unique();
+                assume.fail();
             }
             catch(e)
             {
@@ -34,6 +35,7 @@ describe('validator', ()=>{
             try
             {
                 container.immutable("asdf").unique();
+                assume.fail();
             }
             catch(e)
             {
@@ -57,6 +59,7 @@ describe('validator', ()=>{
             try
             {
                 p.uniqueCriteria({});
+                assume.fail();
             }
             catch(e)
             {

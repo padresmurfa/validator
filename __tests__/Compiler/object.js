@@ -62,6 +62,22 @@ describe('Compiler', ()=>{
             c.check({Actor:"dsa",Now:"2018-04-07"});
         });
 
+        it('validates using an inner validator', ()=>{
+            const inner = validator().boolean("rf");
+            const c = validator("arr").object("smu",inner);
+
+            c.check({smu: {rf: true}});
+            try
+            {
+                c.check({smu: {rf: null}});
+                assume.fail();
+            }
+            catch (e)
+            {
+                expect(e.message).toBe("arr/smu/rf: Expected value (<null>) to be a boolean");
+            }
+        });
+        
         it('validates a complex structure', ()=>{
             let c = createSchema().get("GetOrdersRsp").object((item)=>{
                 return item.
