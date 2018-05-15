@@ -160,9 +160,9 @@ var Compiler = function () {
                         ae.areEqual(vl, ol, msg);
                     });
                 }
-                if (p.expectInstanceOf !== undefined) {
-                    c.add("isInstanceOf", function (v) {
-                        ae.isInstanceOf(v, p.expectInstanceOf);
+                if (p.expectIs !== undefined) {
+                    _lodash2.default.forEach(p.expectIs, function (is) {
+                        c.add(propName, "is", is.check.bind(is));
                     });
                 }
             });

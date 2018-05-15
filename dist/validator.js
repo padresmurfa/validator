@@ -327,18 +327,19 @@ var Validator = function () {
             return this;
         }
     }, {
-        key: 'instanceOf',
-        value: function instanceOf(propertyName, classNames) {
+        key: 'is',
+        value: function is(propertyName, validator) {
             if (propertyName !== undefined) {
-                if (_lodash2.default.isUndefined(classNames)) {
-                    classNames = propertyName;
+                if (_lodash2.default.isUndefined(validator)) {
+                    validator = propertyName;
                 } else {
-                    this.object(propertyName);
+                    this.property(propertyName);
                 }
             }
 
             var property = this.__updateProperty("Only properties may be expected to be instances");
-            property.expectInstanceOf = (0, _assume.normalizeClassNames)(classNames);
+            property.expectIs = property.expectIs || [];
+            property.expectIs.push(validator);
             return this;
         }
     }, {
@@ -389,8 +390,6 @@ var Validator = function () {
     }, {
         key: 'check',
         value: function check(props) {
-            _assume2.default.isInstanceOf(this, "Validator", "Check called with incorrect this pointer.  Expected a Validator");
-
             return this.compiled().check(props);
         }
     }, {
