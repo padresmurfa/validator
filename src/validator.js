@@ -272,9 +272,10 @@ export default class Validator
     {
         if (propertyName !== undefined)
         {
-            if (_.isFunction(propertyName))
+            if (arrayItemValidator === undefined && !_.isString(propertyName))
             {
                 arrayItemValidator = propertyName;
+                propertyName = undefined;
             }
             else
             {
@@ -310,9 +311,10 @@ export default class Validator
     {
         if (propertyName !== undefined)
         {
-            if (_.isFunction(propertyName))
+            if (objectValidator === undefined && !_.isString(propertyName))
             {
                 objectValidator = propertyName;
+                propertyName = undefined;
             }
             else
             {
@@ -353,9 +355,10 @@ export default class Validator
     {
         if (propertyName !== undefined)
         {
-            if (_.isUndefined(validator))
+            if (validator === undefined && !_.isString(propertyName))
             {
                 validator = propertyName;
+                propertyName = undefined;
             }
             else
             {
