@@ -118,6 +118,12 @@ var Compiler = function () {
                 if (p.expectEmpty === true) {
                     c.add(propName, "isEmpty", ae.isEmpty);
                 }
+                if (p.expectTrue === true) {
+                    c.add(propName, "isTrue", ae.isTrue);
+                }
+                if (p.expectFalse === true) {
+                    c.add(propName, "isFalse", ae.isFalse);
+                }
                 if (p.expectString === true) {
                     c.add(propName, "isString", ae.isString);
                 }

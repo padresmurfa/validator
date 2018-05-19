@@ -169,6 +169,28 @@ var Validator = function () {
             return this;
         }
     }, {
+        key: 'isTrue',
+        value: function isTrue(propertyName) {
+            if (propertyName !== undefined) {
+                this.boolean(propertyName);
+            }
+
+            var property = this.__updateProperty("Only properties may be expected to be true");
+            property.expectTrue = true;
+            return this;
+        }
+    }, {
+        key: 'isFalse',
+        value: function isFalse(propertyName) {
+            if (propertyName !== undefined) {
+                this.boolean(propertyName);
+            }
+
+            var property = this.__updateProperty("Only properties may be expected to be true");
+            property.expectFalse = true;
+            return this;
+        }
+    }, {
         key: 'date',
         value: function date(propertyName) {
             if (propertyName !== undefined) {

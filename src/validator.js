@@ -166,6 +166,30 @@ export default class Validator
         return this;
     }
     
+    isTrue(propertyName)
+    {
+        if (propertyName !== undefined)
+        {
+            this.boolean(propertyName);
+        }
+
+        const property = this.__updateProperty("Only properties may be expected to be true");
+        property.expectTrue = true;
+        return this;
+    }
+
+    isFalse(propertyName)
+    {
+        if (propertyName !== undefined)
+        {
+            this.boolean(propertyName);
+        }
+
+        const property = this.__updateProperty("Only properties may be expected to be true");
+        property.expectFalse = true;
+        return this;
+    }
+    
     date(propertyName)
     {
         if (propertyName !== undefined)
