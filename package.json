@@ -9,7 +9,7 @@
     "babel": "npx babel src --out-dir dist",
     "build": "npm run-script babel",
     "rebuild": "npm run-script clean && npm run-script build",
-    "prepublish": "npm test && npm rebuild && git status"
+    "prepublish": "npm run-script rebuild && npm test && npm rebuild && git status"
   },
   "repository": {
     "type": "git",

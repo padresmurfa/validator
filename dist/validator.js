@@ -311,11 +311,6 @@ var Validator = function () {
             return this;
         }
     }, {
-        key: '__self',
-        value: function __self() {
-            return this;
-        }
-    }, {
         key: 'object',
         value: function object(propertyName, objectValidator) {
             if (propertyName !== undefined) {
@@ -336,6 +331,31 @@ var Validator = function () {
                 } else {
                     var v = Validator.create(this.path());
                     property.objectValidator = objectValidator(v);
+                }
+            }
+            return this;
+        }
+    }, {
+        key: 'mapping',
+        value: function mapping(propertyName, mappingValueValidator) {
+            if (propertyName !== undefined) {
+                if (mappingValueValidator === undefined && !_lodash2.default.isString(propertyName)) {
+                    mappingValueValidator = propertyName;
+                    propertyName = undefined;
+                } else {
+                    this.property(propertyName);
+                }
+            }
+
+            var property = this.__updateProperty("Only properties may be expected to be a mapping");
+            property.expectMapping = true;
+            property.expectNullable = false;
+            if (mappingValueValidator !== undefined) {
+                if (!_lodash2.default.isFunction(mappingValueValidator)) {
+                    property.mappingValueValidator = mappingValueValidator.clone(this.path());
+                } else {
+                    var v = Validator.create(this.path());
+                    property.mappingValueValidator = mappingValueValidator(v);
                 }
             }
             return this;
