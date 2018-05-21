@@ -128,6 +128,12 @@ class Compiler {
             {
                 c.add( propName, "isObject", ae.isObject );
             }
+            if (p.expectMapping === true)
+            {
+                // mappings are objects where the key is not fixed
+                // TODO: proper error message on failure
+                c.add( propName, "isMapping", ae.isObject );
+            }
             if (p.expectIsoDate === true)
             {
                 c.add( propName, "isIsoDate", ae.isIsoDate );
@@ -141,6 +147,14 @@ class Compiler {
                 c.add( propName, "isArrayItem", (v)=>{
                     _.forEach(v,(item)=>{
                         p.itemValidator.check(item);
+                    });
+                });
+            }
+            if (p.mappingValueValidator !== undefined)
+            {
+                c.add( propName, "isMappingValue", (v)=>{
+                    _.forEach(v,(item)=>{
+                        p.mappingValueValidator.check(item);
                     });
                 });
             }

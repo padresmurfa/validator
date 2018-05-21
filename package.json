@@ -8,7 +8,9 @@
     "clean": "rm -rf dist && mkdir dist",
     "babel": "npx babel src --out-dir dist",
     "build": "npm run-script babel",
-    "rebuild": "npm run-script clean && npm run-script build"
+    "rebuild": "npm run-script clean && npm run-script build",
+    "prepublish": "npm test && npm rebuild && git status",
+    "publish": "npm version patch && npm publish"
   },
   "repository": {
     "type": "git",

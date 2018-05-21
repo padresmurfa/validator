@@ -326,11 +326,6 @@ export default class Validator
         return this;
     }
 
-    __self()
-    {
-        return this;
-    }
-
     object(propertyName, objectValidator)
     {
         if (propertyName !== undefined)
@@ -364,6 +359,39 @@ export default class Validator
         return this;
     }
 
+    mapping(propertyName, mappingValueValidator)
+    {
+        if (propertyName !== undefined)
+        {
+            if (mappingValueValidator === undefined && !_.isString(propertyName))
+            {
+                mappingValueValidator = propertyName;
+                propertyName = undefined;
+            }
+            else
+            {
+                this.property(propertyName);
+            }
+        }
+        
+        const property = this.__updateProperty("Only properties may be expected to be a mapping");
+        property.expectMapping = true;
+        property.expectNullable = false;
+        if (mappingValueValidator !== undefined)
+        {
+            if (!_.isFunction(mappingValueValidator))
+            {
+                property.mappingValueValidator = mappingValueValidator.clone(this.path());
+            }
+            else
+            {
+                const v = Validator.create(this.path());
+                property.mappingValueValidator = mappingValueValidator(v);
+            }
+        }
+        return this;
+    }
+    
     intercept(interceptor)
     {
         if (!_.isFunction(interceptor))
