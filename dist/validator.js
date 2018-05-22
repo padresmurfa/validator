@@ -6,21 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _moment = require('moment');
-
-var _moment2 = _interopRequireDefault(_moment);
-
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
-
-var _binding = require('@padresmurfa/binding');
-
-var _binding2 = _interopRequireDefault(_binding);
-
-var _assume = require('@padresmurfa/assume');
-
-var _assume2 = _interopRequireDefault(_assume);
 
 var _compiler = require('./compiler');
 
@@ -29,6 +17,12 @@ var _compiler2 = _interopRequireDefault(_compiler);
 var _validationFailed = require('./validation-failed');
 
 var _validationFailed2 = _interopRequireDefault(_validationFailed);
+
+var _assume = require('@padresmurfa/assume');
+
+var _binding = require('@padresmurfa/binding');
+
+var _binding2 = _interopRequireDefault(_binding);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -39,6 +33,7 @@ function isWhiteSpace(params) {
         // string is not empty and not just whitespace
         return false;
     }
+
     return true;
 }
 
@@ -54,6 +49,7 @@ function toComparable(item) {
     if (_lodash2.default.isDate(item)) {
         return item.getTime();
     }
+
     return item;
 }
 
@@ -68,28 +64,33 @@ var Validator = function () {
     }
 
     _createClass(Validator, [{
+        key: '__propertyPn',
+        value: function __propertyPn(propertyName) {
+            var pn = propertyName;
+
+            if (pn === null) {
+                pn = "$";
+            }
+
+            if (this.__storage[pn] === undefined) {
+                this.__storage[pn] = {};
+            }
+
+            return pn;
+        }
+    }, {
         key: 'property',
         value: function property(propertyName) {
             if (propertyName === undefined) {
-                propertyName = this.__propertyName;
-                if (propertyName === null) {
-                    propertyName = "$";
-                }
-                if (this.__storage[propertyName] === undefined) {
-                    this.__storage[propertyName] = {};
-                }
-                return this.__storage[propertyName];
+                var pn = this.__propertyPn(this.__propertyName);
+
+                return this.__storage[pn];
             } else if (this.__propertyName !== propertyName) {
-                if (propertyName === null) {
-                    propertyName = "$";
-                }
-                this.__propertyName = propertyName;
-                if (this.__storage[propertyName] === undefined) {
-                    this.__storage[propertyName] = {};
-                }
+                this.__propertyName = this.__propertyPn(propertyName);
                 // properties are required by default
                 this.required();
             }
+
             return this;
         }
     }, {
@@ -102,9 +103,9 @@ var Validator = function () {
         value: function path() {
             if (this.__propertyName === null) {
                 return this.__identifier;
-            } else {
-                return this.__identifier + "/" + this.__propertyName;
             }
+
+            return this.__identifier + "/" + this.__propertyName;
         }
     }, {
         key: 'clone',
@@ -114,8 +115,10 @@ var Validator = function () {
             }
 
             var retval = new Validator(variant);
+
             retval.propertyName = this.__propertyName;
             retval.__storage = _lodash2.default.cloneDeep(this.__storage);
+
             return retval;
         }
     }, {
@@ -126,7 +129,9 @@ var Validator = function () {
             }
 
             var property = this.__updateProperty("Only properties may be expected to be immutable");
+
             property.expectImmutable = true;
+
             return this;
         }
     }, {
@@ -137,9 +142,11 @@ var Validator = function () {
             }
 
             var property = this.__updateProperty("Only properties may be expected to be strings");
+
             property.expectString = true;
             property.expectImmutable = true;
             property.expectNullable = false;
+
             return this;
         }
     }, {
@@ -150,9 +157,11 @@ var Validator = function () {
             }
 
             var property = this.__updateProperty("Only properties may be expected to be integers");
+
             property.expectInteger = true;
             property.expectImmutable = true;
             property.expectNullable = false;
+
             return this;
         }
     }, {
@@ -163,9 +172,11 @@ var Validator = function () {
             }
 
             var property = this.__updateProperty("Only properties may be expected to be booleans");
+
             property.expectBoolean = true;
             property.expectImmutable = true;
             property.expectNullable = false;
+
             return this;
         }
     }, {
@@ -176,7 +187,9 @@ var Validator = function () {
             }
 
             var property = this.__updateProperty("Only properties may be expected to be true");
+
             property.expectTrue = true;
+
             return this;
         }
     }, {
@@ -187,7 +200,9 @@ var Validator = function () {
             }
 
             var property = this.__updateProperty("Only properties may be expected to be true");
+
             property.expectFalse = true;
+
             return this;
         }
     }, {
@@ -198,8 +213,10 @@ var Validator = function () {
             }
 
             var property = this.__updateProperty("Only properties may be expected to be dates");
+
             property.expectDate = true;
             property.expectNullable = false;
+
             return this;
         }
     }, {
@@ -210,9 +227,11 @@ var Validator = function () {
             }
 
             var property = this.__updateProperty("Only properties may be expected to be ISO dates");
+
             property.expectIsoDate = true;
             property.expectImmutable = true;
             property.expectNullable = false;
+
             return this;
         }
     }, {
@@ -223,8 +242,10 @@ var Validator = function () {
             }
 
             var property = this.__updateProperty("Only properties may be expected to be defined");
+
             property.expectDefined = true;
             property.expectUndefined = false;
+
             return this;
         }
     }, {
@@ -235,8 +256,10 @@ var Validator = function () {
             }
 
             var property = this.__updateProperty("Only properties may be expected to be undefined");
+
             property.expectDefined = false;
             property.expectUndefined = true;
+
             return this;
         }
     }, {
@@ -247,8 +270,10 @@ var Validator = function () {
             }
 
             var property = this.__updateProperty("Only properties may be expected to be optionally defined");
+
             property.expectDefined = false;
             property.expectUndefined = false;
+
             return this;
         }
     }, {
@@ -259,7 +284,9 @@ var Validator = function () {
             }
 
             var property = this.__updateProperty("Only properties may be expected to be nullable");
+
             property.expectNullable = true;
+
             return this;
         }
     }, {
@@ -270,7 +297,9 @@ var Validator = function () {
             }
 
             var property = this.__updateProperty("Only properties may be expected to be empty");
+
             property.expectEmpty = true;
+
             return this;
         }
     }, {
@@ -281,30 +310,51 @@ var Validator = function () {
             }
 
             var property = this.__updateProperty("Only properties may be expected to be not empty");
+
             property.expectNotEmpty = true;
+
             return this;
+        }
+    }, {
+        key: '__collection',
+        value: function __collection(propertyName, ciValidator, wat) {
+            var pn = propertyName;
+            var subValidator = ciValidator;
+
+            if (pn !== undefined) {
+                if (subValidator === undefined && !_lodash2.default.isString(pn)) {
+                    subValidator = pn;
+                    pn = undefined;
+                } else {
+                    this.property(pn);
+                }
+            }
+
+            var property = this.__updateProperty('Only properties may be expected to be ' + wat);
+
+            property.expectNullable = false;
+
+            return {
+                property: property,
+                subValidator: subValidator
+            };
         }
     }, {
         key: 'array',
         value: function array(propertyName, arrayItemValidator) {
-            if (propertyName !== undefined) {
-                if (arrayItemValidator === undefined && !_lodash2.default.isString(propertyName)) {
-                    arrayItemValidator = propertyName;
-                    propertyName = undefined;
-                } else {
-                    this.property(propertyName);
-                }
-            }
+            var _collection = this.__collection(propertyName, arrayItemValidator, "an array"),
+                property = _collection.property,
+                subValidator = _collection.subValidator;
 
-            var property = this.__updateProperty("Only properties may be expected to be an array");
             property.expectArray = true;
-            property.expectNullable = false;
-            if (arrayItemValidator !== undefined) {
-                if (!_lodash2.default.isFunction(arrayItemValidator)) {
-                    property.itemValidator = arrayItemValidator.clone(this.path());
-                } else {
+
+            if (subValidator !== undefined) {
+                if (_lodash2.default.isFunction(subValidator)) {
                     var v = Validator.create(this.path());
-                    property.itemValidator = arrayItemValidator(v);
+
+                    property.itemValidator = subValidator(v);
+                } else {
+                    property.itemValidator = subValidator.clone(this.path());
                 }
             }
 
@@ -313,51 +363,43 @@ var Validator = function () {
     }, {
         key: 'object',
         value: function object(propertyName, objectValidator) {
-            if (propertyName !== undefined) {
-                if (objectValidator === undefined && !_lodash2.default.isString(propertyName)) {
-                    objectValidator = propertyName;
-                    propertyName = undefined;
+            var _collection2 = this.__collection(propertyName, objectValidator, "an object"),
+                property = _collection2.property,
+                subValidator = _collection2.subValidator;
+
+            property.expectObject = true;
+
+            if (subValidator !== undefined) {
+                if (_lodash2.default.isFunction(subValidator)) {
+                    var v = Validator.create(this.path());
+
+                    property.objectValidator = subValidator(v);
                 } else {
-                    this.property(propertyName);
+                    property.objectValidator = subValidator.clone(this.path());
                 }
             }
 
-            var property = this.__updateProperty("Only properties may be expected to be an object");
-            property.expectObject = true;
-            property.expectNullable = false;
-            if (objectValidator !== undefined) {
-                if (!_lodash2.default.isFunction(objectValidator)) {
-                    property.objectValidator = objectValidator.clone(this.path());
-                } else {
-                    var v = Validator.create(this.path());
-                    property.objectValidator = objectValidator(v);
-                }
-            }
             return this;
         }
     }, {
         key: 'mapping',
         value: function mapping(propertyName, mappingValueValidator) {
-            if (propertyName !== undefined) {
-                if (mappingValueValidator === undefined && !_lodash2.default.isString(propertyName)) {
-                    mappingValueValidator = propertyName;
-                    propertyName = undefined;
+            var _collection3 = this.__collection(propertyName, mappingValueValidator, "a mapping"),
+                property = _collection3.property,
+                subValidator = _collection3.subValidator;
+
+            property.expectMapping = true;
+
+            if (subValidator !== undefined) {
+                if (_lodash2.default.isFunction(subValidator)) {
+                    var v = Validator.create(this.path());
+
+                    property.mappingValueValidator = subValidator(v);
                 } else {
-                    this.property(propertyName);
+                    property.mappingValueValidator = subValidator.clone(this.path());
                 }
             }
 
-            var property = this.__updateProperty("Only properties may be expected to be a mapping");
-            property.expectMapping = true;
-            property.expectNullable = false;
-            if (mappingValueValidator !== undefined) {
-                if (!_lodash2.default.isFunction(mappingValueValidator)) {
-                    property.mappingValueValidator = mappingValueValidator.clone(this.path());
-                } else {
-                    var v = Validator.create(this.path());
-                    property.mappingValueValidator = mappingValueValidator(v);
-                }
-            }
             return this;
         }
     }, {
@@ -366,26 +408,85 @@ var Validator = function () {
             if (!_lodash2.default.isFunction(interceptor)) {
                 throw new Error("Interceptors must be functions");
             }
+
             var property = this.__updateProperty("Only properties may be intercepted");
+
             property.interceptValidation = interceptor;
+
             return this;
         }
     }, {
         key: 'is',
-        value: function is(propertyName, validator) {
-            if (propertyName !== undefined) {
-                if (validator === undefined && !_lodash2.default.isString(propertyName)) {
-                    validator = propertyName;
-                    propertyName = undefined;
-                } else {
-                    this.property(propertyName);
-                }
+        value: function is(propertyName, typeValidator) {
+            var _collection4 = this.__collection(propertyName, typeValidator, "a typed instance"),
+                property = _collection4.property,
+                subValidator = _collection4.subValidator;
+
+            property.expectIs = property.expectIs || [];
+            property.expectIs.push(subValidator);
+
+            return this;
+        }
+    }, {
+        key: '__uniqueDefault',
+        value: function __uniqueDefault(p, uniqueCriteria) {
+            if (uniqueCriteria !== undefined) {
+                return false;
             }
 
-            var property = this.__updateProperty("Only properties may be expected to be instances");
-            property.expectIs = property.expectIs || [];
-            property.expectIs.push(validator);
-            return this;
+            var path = this.path();
+
+            p.uniqueCriteria = function (item) {
+                var ci = toComparable(item);
+
+                validate(path).isImmutable(ci, "Only immutable items can be placed in unique properties using default uniqueness");
+
+                return ci;
+            };
+
+            return true;
+        }
+    }, {
+        key: '__uniqueString',
+        value: function __uniqueString(p, uniqueCriteria) {
+            if (!_lodash2.default.isString(uniqueCriteria)) {
+                return false;
+            }
+
+            var path = this.path();
+
+            p.uniqueCriteria = function (item) {
+                var value = item[uniqueCriteria];
+
+                value = toComparable(value);
+
+                validate(path).isImmutable(value, "Only immutable items can be placed in unique properties");
+
+                return value;
+            };
+
+            return true;
+        }
+    }, {
+        key: '__uniqueFunc',
+        value: function __uniqueFunc(p, uniqueCriteria) {
+            if (!_lodash2.default.isFunction(uniqueCriteria)) {
+                return false;
+            }
+
+            var path = this.path();
+
+            p.uniqueCriteria = function (item) {
+                var value = uniqueCriteria(item);
+
+                value = toComparable(value);
+
+                validate(path).isImmutable(value, "Only immutable items can be placed in unique properties");
+
+                return value;
+            };
+
+            return true;
         }
     }, {
         key: 'unique',
@@ -396,39 +497,14 @@ var Validator = function () {
                 throw new Error("Only arrays can be declared to have unique children");
             }
 
-            if (uniqueCriteria === undefined) {
-                var path = this.path();
-                p.expectUniqueCollection = true;
-                p.uniqueCriteria = function (item) {
-                    item = toComparable(item);
-                    validate(path).isImmutable(item, "Only immutable items can be placed in unique properties using default uniqueness");
-                    return item;
-                };
-            } else if (_lodash2.default.isString(uniqueCriteria)) {
-                var _path = this.path();
-                p.expectUniqueCollection = true;
-                p.uniqueCriteria = function (item) {
-                    var value = item[uniqueCriteria];
-                    value = toComparable(value);
-                    validate(_path).isImmutable(value, "Only immutable items can be placed in unique properties");
-                    return value;
-                };
-            } else if (_lodash2.default.isFunction(uniqueCriteria)) {
-                var _path2 = this.path();
-                p.expectUniqueCollection = true;
-                p.uniqueCriteria = function (item) {
-                    var value = uniqueCriteria(item);
-                    value = toComparable(value);
-                    validate(_path2).isImmutable(value, "Only immutable items can be placed in unique properties");
-                    return value;
-                };
-            } else {
+            var set = this.__uniqueDefault(p, uniqueCriteria) || this.__uniqueString(p, uniqueCriteria) || this.__uniqueFunc(p, uniqueCriteria);
+
+            if (!set) {
                 throw new Error("Unique criteria can only be specified on array-item object properties or immutable array-items");
             }
 
-            if (msg !== undefined) {
-                p.uniqueCriteriaMsg = msg;
-            }
+            p.expectUniqueCollection = true;
+            p.uniqueCriteriaMsg = msg;
 
             return this;
         }
@@ -441,9 +517,11 @@ var Validator = function () {
         key: '__readProperty',
         value: function __readProperty(msg) {
             var property = this.property();
+
             if (property === undefined) {
                 throw new Error(msg);
             }
+
             return property;
         }
     }, {
@@ -462,11 +540,13 @@ var Validator = function () {
                 if (this.__compiled === null) {
                     this.__compiled = (0, _compiler2.default)(this.__storage, this.__identifier, validate);
                 }
+
                 return this.__compiled;
-            } else {
-                this.__compiled = value;
-                return this;
             }
+
+            this.__compiled = value;
+
+            return this;
         }
     }], [{
         key: 'create',

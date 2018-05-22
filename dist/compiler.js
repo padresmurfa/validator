@@ -6,10 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _moment = require('moment');
-
-var _moment2 = _interopRequireDefault(_moment);
-
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -18,19 +14,9 @@ var _assume = require('@padresmurfa/assume');
 
 var _assume2 = _interopRequireDefault(_assume);
 
-var _validationFailed = require('./validation-failed');
-
-var _validationFailed2 = _interopRequireDefault(_validationFailed);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function rename(newName, func) {
-    Object.defineProperty(func, "name", { value: newName });
-
-    return func;
-}
 
 var Compiled = function () {
     function Compiled(property) {
@@ -48,6 +34,7 @@ var Compiled = function () {
             _lodash2.default.forEach(this.checks, function (check) {
 
                 var v = value;
+
                 if (check.propName !== "$") {
                     v = v[check.propName];
                 }
@@ -72,9 +59,9 @@ var Compiled = function () {
         key: 'add',
         value: function add(propName, condition, method) {
             this.checks.push({
-                propName: propName,
                 condition: condition,
-                method: method
+                method: method,
+                propName: propName
             });
         }
     }]);
@@ -89,12 +76,17 @@ var Compiler = function () {
 
     _createClass(Compiler, null, [{
         key: 'compile',
+
+
+        /* eslint-disable complexity, max-statements */
+
+        // TODO: prevent inconsistent declarations during construction
+        //       and set up the asserts beforehand
+
         value: function compile(property, identifier, assumptionEngineFactory) {
             _assume2.default.isObject(property, "Can only check known properties of objects");
 
             var c = new Compiled(property);
-
-            // TODO: prevent inconsistent declarations during construction
 
             _lodash2.default.forEach(property, function (p, propName) {
 
@@ -102,7 +94,9 @@ var Compiler = function () {
 
                 if (p.interceptValidation !== undefined) {
                     c.add(propName, "intercept", function () {
+
                         var ret = p.interceptValidation.apply(p, arguments);
+
                         ae.isTrue(ret, ret);
                     });
                 }
@@ -174,7 +168,8 @@ var Compiler = function () {
                     c.add(propName, "isUnique", function (v) {
                         var vl = v.length;
                         var ol = _lodash2.default.uniqBy(v, p.uniqueCriteria).length;
-                        var msg = undefined; // p.uniqueCriteriaMsg; || "Expected a collection of unique items";
+                        var msg = p.uniqueCriteriaMsg || "Expected a collection of unique items";
+
                         ae.areEqual(vl, ol, msg);
                     });
                 }
@@ -187,6 +182,9 @@ var Compiler = function () {
 
             return c;
         }
+
+        /* eslint-enable complexity, max-statements */
+
     }]);
 
     return Compiler;

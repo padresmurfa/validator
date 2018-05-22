@@ -1,18 +1,15 @@
-import moment from 'moment';
 import _ from 'lodash';
-
-import binding from '@padresmurfa/binding';
-
-import assume, { Assume } from '@padresmurfa/assume';
-
 import compile from './compiler';
 import ValidationFailed from './validation-failed';
+import {Assume} from '@padresmurfa/assume';
+import binding from '@padresmurfa/binding';
 
 function isWhiteSpace(params) {
     if (/\S/.test(params)) {
         // string is not empty and not just whitespace
         return false;
     }
+
     return true;
 }
 
@@ -32,6 +29,7 @@ function toComparable(item)
     {
         return item.getTime();
     }
+    
     return item;
 }
 
@@ -50,35 +48,38 @@ export default class Validator
         return new Validator(...args);
     }
 
+    __propertyPn(propertyName)
+    {
+        let pn = propertyName;
+
+        if (pn === null)
+        {
+            pn = "$";
+        }
+
+        if (this.__storage[pn] === undefined)
+        {
+            this.__storage[pn] = {};
+        }
+
+        return pn;
+    }
+
     property(propertyName)
     {
         if (propertyName === undefined)
         {
-            propertyName = this.__propertyName;
-            if (propertyName === null)
-            {
-                propertyName = "$";
-            }
-            if (this.__storage[propertyName] === undefined)
-            {
-                this.__storage[propertyName] = {};
-            }
-            return this.__storage[propertyName];
+            const pn = this.__propertyPn(this.__propertyName);
+
+            return this.__storage[pn];
         }
         else if (this.__propertyName !== propertyName)
         {
-            if (propertyName === null)
-            {
-                propertyName = "$";
-            }
-            this.__propertyName = propertyName;
-            if (this.__storage[propertyName] === undefined)
-            {
-                this.__storage[propertyName] = {};
-            }
+            this.__propertyName = this.__propertyPn(propertyName);
             // properties are required by default
             this.required();
         }
+
         return this;
     }
 
@@ -93,10 +94,8 @@ export default class Validator
         {
             return this.__identifier;
         }
-        else
-        {
-            return this.__identifier + "/" + this.__propertyName;
-        }
+
+        return this.__identifier + "/" + this.__propertyName;
     }
 
     clone(variant)
@@ -107,8 +106,10 @@ export default class Validator
         }
 
         const retval = new Validator(variant);
+
         retval.propertyName = this.__propertyName;
         retval.__storage = _.cloneDeep(this.__storage);
+
         return retval;
     }
 
@@ -120,7 +121,9 @@ export default class Validator
         }
 
         const property = this.__updateProperty("Only properties may be expected to be immutable");
+
         property.expectImmutable = true;
+
         return this;
     }
 
@@ -132,9 +135,11 @@ export default class Validator
         }
 
         const property = this.__updateProperty("Only properties may be expected to be strings");
+
         property.expectString = true;
         property.expectImmutable = true;
         property.expectNullable = false;
+
         return this;
     }
 
@@ -146,9 +151,11 @@ export default class Validator
         }
 
         const property = this.__updateProperty("Only properties may be expected to be integers");
+
         property.expectInteger = true;
         property.expectImmutable = true;
         property.expectNullable = false;
+
         return this;
     }
 
@@ -160,9 +167,11 @@ export default class Validator
         }
 
         const property = this.__updateProperty("Only properties may be expected to be booleans");
+
         property.expectBoolean = true;
         property.expectImmutable = true;
         property.expectNullable = false;
+
         return this;
     }
     
@@ -174,7 +183,9 @@ export default class Validator
         }
 
         const property = this.__updateProperty("Only properties may be expected to be true");
+
         property.expectTrue = true;
+
         return this;
     }
 
@@ -186,7 +197,9 @@ export default class Validator
         }
 
         const property = this.__updateProperty("Only properties may be expected to be true");
+
         property.expectFalse = true;
+
         return this;
     }
     
@@ -198,8 +211,10 @@ export default class Validator
         }
 
         const property = this.__updateProperty("Only properties may be expected to be dates");
+
         property.expectDate = true;
         property.expectNullable = false;
+
         return this;
     }
 
@@ -211,9 +226,11 @@ export default class Validator
         }
 
         const property = this.__updateProperty("Only properties may be expected to be ISO dates");
+
         property.expectIsoDate = true;
         property.expectImmutable = true;
         property.expectNullable = false;
+
         return this;
     }
 
@@ -225,8 +242,10 @@ export default class Validator
         }
 
         const property = this.__updateProperty("Only properties may be expected to be defined");
+
         property.expectDefined = true;
         property.expectUndefined = false;
+
         return this;
     }
 
@@ -238,8 +257,10 @@ export default class Validator
         }
 
         const property = this.__updateProperty("Only properties may be expected to be undefined");
+
         property.expectDefined = false;
         property.expectUndefined = true;
+
         return this;
     }
 
@@ -251,8 +272,10 @@ export default class Validator
         }
 
         const property = this.__updateProperty("Only properties may be expected to be optionally defined");
+
         property.expectDefined = false;
         property.expectUndefined = false;
+
         return this;
     }
 
@@ -264,7 +287,9 @@ export default class Validator
         }
 
         const property = this.__updateProperty("Only properties may be expected to be nullable");
+
         property.expectNullable = true;
+
         return this;
     }
     
@@ -276,7 +301,9 @@ export default class Validator
         }
 
         const property = this.__updateProperty("Only properties may be expected to be empty");
+
         property.expectEmpty = true;
+
         return this;
     }
 
@@ -288,38 +315,57 @@ export default class Validator
         }
 
         const property = this.__updateProperty("Only properties may be expected to be not empty");
+
         property.expectNotEmpty = true;
+
         return this;
+    }
+
+    __collection(propertyName, ciValidator, wat)
+    {
+        let pn = propertyName;
+        let subValidator = ciValidator;
+
+        if (pn !== undefined)
+        {
+            if (subValidator === undefined && !_.isString(pn))
+            {
+                subValidator = pn;
+                pn = undefined;
+            }
+            else
+            {
+                this.property(pn);
+            }
+        }
+
+        const property = this.__updateProperty(`Only properties may be expected to be ${wat}`);
+
+        property.expectNullable = false;
+
+        return {
+            property,
+            subValidator
+        };
     }
 
     array(propertyName, arrayItemValidator)
     {
-        if (propertyName !== undefined)
-        {
-            if (arrayItemValidator === undefined && !_.isString(propertyName))
-            {
-                arrayItemValidator = propertyName;
-                propertyName = undefined;
-            }
-            else
-            {
-                this.property(propertyName);
-            }
-        }
+        const {property, subValidator} = this.__collection(propertyName, arrayItemValidator, "an array");
 
-        const property = this.__updateProperty("Only properties may be expected to be an array");
         property.expectArray = true;
-        property.expectNullable = false;
-        if (arrayItemValidator !== undefined)
+
+        if (subValidator !== undefined)
         {
-            if (!_.isFunction(arrayItemValidator))
-            {
-                property.itemValidator = arrayItemValidator.clone(this.path());
-            }
-            else
+            if (_.isFunction(subValidator))
             {
                 const v = Validator.create(this.path());
-                property.itemValidator = arrayItemValidator(v);
+
+                property.itemValidator = subValidator(v);
+            }
+            else
+            {
+                property.itemValidator = subValidator.clone(this.path());
             }
         }
 
@@ -328,67 +374,47 @@ export default class Validator
 
     object(propertyName, objectValidator)
     {
-        if (propertyName !== undefined)
-        {
-            if (objectValidator === undefined && !_.isString(propertyName))
-            {
-                objectValidator = propertyName;
-                propertyName = undefined;
-            }
-            else
-            {
-                this.property(propertyName);
-            }
-        }
-        
-        const property = this.__updateProperty("Only properties may be expected to be an object");
+        const {property, subValidator} = this.__collection(propertyName, objectValidator, "an object");
+
         property.expectObject = true;
-        property.expectNullable = false;
-        if (objectValidator !== undefined)
+
+        if (subValidator !== undefined)
         {
-            if (!_.isFunction(objectValidator))
-            {
-                property.objectValidator = objectValidator.clone(this.path());
-            }
-            else
+            if (_.isFunction(subValidator))
             {
                 const v = Validator.create(this.path());
-                property.objectValidator = objectValidator(v);
+
+                property.objectValidator = subValidator(v);
+            }
+            else
+            {
+                property.objectValidator = subValidator.clone(this.path());
             }
         }
+
         return this;
     }
 
     mapping(propertyName, mappingValueValidator)
     {
-        if (propertyName !== undefined)
-        {
-            if (mappingValueValidator === undefined && !_.isString(propertyName))
-            {
-                mappingValueValidator = propertyName;
-                propertyName = undefined;
-            }
-            else
-            {
-                this.property(propertyName);
-            }
-        }
-        
-        const property = this.__updateProperty("Only properties may be expected to be a mapping");
+        const {property, subValidator} = this.__collection(propertyName, mappingValueValidator, "a mapping");
+
         property.expectMapping = true;
-        property.expectNullable = false;
-        if (mappingValueValidator !== undefined)
+
+        if (subValidator !== undefined)
         {
-            if (!_.isFunction(mappingValueValidator))
-            {
-                property.mappingValueValidator = mappingValueValidator.clone(this.path());
-            }
-            else
+            if (_.isFunction(subValidator))
             {
                 const v = Validator.create(this.path());
-                property.mappingValueValidator = mappingValueValidator(v);
+
+                property.mappingValueValidator = subValidator(v);
+            }
+            else
+            {
+                property.mappingValueValidator = subValidator.clone(this.path());
             }
         }
+
         return this;
     }
     
@@ -398,32 +424,88 @@ export default class Validator
         {
             throw new Error("Interceptors must be functions");      
         }
+
         const property = this.__updateProperty("Only properties may be intercepted");
+
         property.interceptValidation = interceptor;
+
         return this;
     }
 
-    is(propertyName, validator)
+    is(propertyName, typeValidator)
     {
-        if (propertyName !== undefined)
-        {
-            if (validator === undefined && !_.isString(propertyName))
-            {
-                validator = propertyName;
-                propertyName = undefined;
-            }
-            else
-            {
-                this.property(propertyName);
-            }
-        }
-        
-        const property = this.__updateProperty("Only properties may be expected to be instances");
+        const {property, subValidator} = this.__collection(propertyName, typeValidator, "a typed instance");
+
         property.expectIs = property.expectIs || [];
-        property.expectIs.push(validator);
+        property.expectIs.push(subValidator);
+
         return this;
     }
 
+    __uniqueDefault(p, uniqueCriteria)
+    {
+        if (uniqueCriteria !== undefined)
+        {
+            return false;
+        }
+
+        const path = this.path();
+
+        p.uniqueCriteria = (item) => {
+            const ci = toComparable(item);
+
+            validate(path).isImmutable(ci, "Only immutable items can be placed in unique properties using default uniqueness");
+    
+            return ci;
+        };
+
+        return true;
+    }
+
+    __uniqueString(p, uniqueCriteria)
+    {
+        if (!_.isString(uniqueCriteria))
+        {
+            return false;
+        }
+
+        const path = this.path();
+
+        p.uniqueCriteria = (item) => {
+            let value = item[uniqueCriteria];
+
+            value = toComparable(value);
+
+            validate(path).isImmutable(value, "Only immutable items can be placed in unique properties");
+
+            return value;
+        };
+
+        return true;
+    }    
+
+    __uniqueFunc(p, uniqueCriteria)
+    {
+        if (!_.isFunction(uniqueCriteria))
+        {
+            return false;
+        }
+
+        const path = this.path();
+
+        p.uniqueCriteria = (item) => {
+            let value = uniqueCriteria(item);
+
+            value = toComparable(value);
+
+            validate(path).isImmutable(value, "Only immutable items can be placed in unique properties");
+
+            return value;
+        };
+
+        return true;
+    }
+    
     unique(uniqueCriteria, msg)
     {
         const p = this.__updateProperty("Only properties may have unique criteria");
@@ -433,47 +515,17 @@ export default class Validator
             throw new Error("Only arrays can be declared to have unique children");
         }
 
-        if (uniqueCriteria === undefined)
-        {
-            const path = this.path();
-            p.expectUniqueCollection = true;
-            p.uniqueCriteria = (item) => {
-                item = toComparable(item);
-                validate(path).isImmutable(item, "Only immutable items can be placed in unique properties using default uniqueness");
-                return item;
-            };
-        }
-        else if (_.isString(uniqueCriteria))
-        {
-            const path = this.path();
-            p.expectUniqueCollection = true;
-            p.uniqueCriteria = (item) => {
-                let value = item[uniqueCriteria];
-                value = toComparable(value);
-                validate(path).isImmutable(value, "Only immutable items can be placed in unique properties");
-                return value;
-            };
-        }
-        else if (_.isFunction(uniqueCriteria))
-        {
-            const path = this.path();
-            p.expectUniqueCollection = true;
-            p.uniqueCriteria = (item) => {
-                let value = uniqueCriteria(item);
-                value = toComparable(value);
-                validate(path).isImmutable(value, "Only immutable items can be placed in unique properties");
-                return value;
-            };
-        }
-        else
+        const set = this.__uniqueDefault(p, uniqueCriteria) ||
+            this.__uniqueString(p, uniqueCriteria) ||
+            this.__uniqueFunc(p, uniqueCriteria);
+
+        if (!set)
         {
             throw new Error("Unique criteria can only be specified on array-item object properties or immutable array-items");
         }
 
-        if (msg !== undefined)
-        {
-            p.uniqueCriteriaMsg = msg;
-        }
+        p.expectUniqueCollection = true;
+        p.uniqueCriteriaMsg = msg;
 
         return this;
     }
@@ -486,10 +538,12 @@ export default class Validator
     __readProperty(msg)
     {
         const property = this.property();
+
         if (property === undefined)
         {
             throw new Error(msg);
         }
+
         return property;
     }
 
@@ -508,15 +562,14 @@ export default class Validator
         {
             if (this.__compiled === null)
             {
-                this.__compiled = compile(this.__storage, this.__identifier, validate );
+                this.__compiled = compile(this.__storage, this.__identifier, validate);
             }
+
             return this.__compiled;
         }
-        else
-        {
-            this.__compiled = value;
-            return this;
-        }
-    }
 
+        this.__compiled = value;
+
+        return this;
+    }
 }
